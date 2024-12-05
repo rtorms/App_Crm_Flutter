@@ -3,18 +3,33 @@ import 'package:crm_flutter/screens/Lista_oportunidade_srcreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CrmApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CrmApp extends StatelessWidget {
+  const CrmApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CRM FLUTTER',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        primaryColor: Colors.indigo,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blueGrey,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: 18.0, color: Colors.black),
+          bodyMedium: TextStyle(fontSize: 16.0, color: Colors.black54),
+        ),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'CRM ROBERTO'),
@@ -22,34 +37,24 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // Adiciona o logo estático
+            const LogoWidget(),
+            const SizedBox(height: 50), // Espaçamento entre o logo e os botões
             ElevatedButton(
               onPressed: () {
                 // Navega para cliente
@@ -58,9 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => ClienteListScreen()),
                 );
               },
-              child: Text('Clientes'),
+              child: const Text('Clientes'),
             ),
-            SizedBox(height: 20), // Espaçamento entre os botões
+            const SizedBox(height: 20), // Espaçamento entre os botões
             ElevatedButton(
               onPressed: () {
                 // Navega para oportunidades
@@ -70,11 +75,33 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => OportunidadeListScreen()),
                 );
               },
-              child: Text('Oportunidades'),
+              child: const Text('Oportunidades'),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(
+          'lib/assets/logo_utfpr.png',
+          width: 150, // Tamanho do logo
+          height: 150,
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          'Bem-vindo ao CRM Roberto',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }
