@@ -1,3 +1,3 @@
 class config {
-  static const String urlBase = 'http://192.168.1.35:8080/CrmApiApp';
+  static const String urlBase = 'http://3.82.251.42:8080/CrmApiApp';
 }

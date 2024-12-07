@@ -191,6 +191,7 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                key: Key('ebSavarCliente'),
                 onPressed: _salvarCliente,
                 child: const Text('Salvar Cliente'),
               ),

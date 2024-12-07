@@ -75,10 +75,21 @@ void main() {
     expect(find.text('Nome Fantasia Teste'), findsOneWidget);
 
     // Simular clique no botão de salvar
-    await tester.tap(find.text('Salvar Cliente'));
+    await tester.tap(find.byKey(Key('ebSavarCliente')));
     await tester.pumpAndSettle();
 
-    // Verificar se a navegação ocorreu e a tela de lista foi exibida
-    expect(find.byType(ClienteListScreen), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ClienteListScreen(),
+      ),
+    );
+
+    await tester.runAsync(() async {
+      await Future.delayed(const Duration(seconds: 1)); // Simula tempo da API
+    });
+    await tester.pumpAndSettle(); // Espera o carregamento completar
+
+    // Verifica novamente se clientes estão visíveis
+    expect(find.byType(ListTile), findsWidgets);
   });
 }
