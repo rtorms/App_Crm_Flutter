@@ -8,6 +8,7 @@ import 'package:crm_flutter/service/OportunidadeService.dart';
 import 'package:crm_flutter/util/EnumSituacaoOportunidade.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CadastroOportunidadeScreen extends StatefulWidget {
   final Oportunidade? oportunidade;
@@ -170,7 +171,26 @@ class _CadastroOportunidadeScreenState
                 decoration: const InputDecoration(labelText: 'Valor'),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  // Formatar com ponto decimal, permitindo dois dígitos decimais
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    // Retirar caracteres não numéricos e permitir apenas números e ponto
+                    String newText =
+                        newValue.text.replaceAll(RegExp('[^0-9.]'), '');
+                    if (newText.contains('.') &&
+                        newText.indexOf('.') != newText.lastIndexOf('.')) {
+                      // Permite apenas um ponto decimal
+                      newText = newText.substring(0, newText.lastIndexOf('.'));
+                    }
+                    return TextEditingValue(
+                      text: newText,
+                      selection:
+                          TextSelection.collapsed(offset: newText.length),
+                    );
+                  })
+                ],
               ),
+
               const SizedBox(height: 20),
               // Botão de salvar
               ElevatedButton(
@@ -185,6 +205,7 @@ class _CadastroOportunidadeScreenState
                       builder: (context) => AnotacoesScreen(
                         anotacoes: widget.oportunidade?.anotacoes ?? [],
                         idOportunidade: widget.oportunidade?.id ?? 0,
+                        nomeCliente: _clienteSelecionado?.nomeFantasia ?? "",
                       ),
                     ),
                   );

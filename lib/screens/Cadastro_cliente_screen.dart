@@ -4,6 +4,8 @@ import 'package:crm_flutter/screens/Lista_cliente_screen.dart';
 import 'package:crm_flutter/service/ClienteService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class CadastroClienteScreen extends StatefulWidget {
   final Cliente? cliente;
@@ -21,11 +23,22 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
   late final TextEditingController _telefoneController;
   late final TextEditingController _cepController;
   late final TextEditingController _enderecoController;
+  late final TextEditingController _numeroController;
   late final TextEditingController _bairroController;
   late final TextEditingController _complementoController;
   late final TextEditingController _cidadeController;
 
   late final ClienteService clienteService;
+
+  String _cpfCnpjMask = '###.###.###-##'; // Inicia com CPF
+
+  void _updateMask(String value) {
+    setState(() {
+      // formata de acordo com quantidades digitos
+      _cpfCnpjMask =
+          value.length < 14 ? '###.###.###-##' : '##.###.###/####-##';
+    });
+  }
 
   @override
   void initState() {
@@ -45,6 +58,8 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
     _cepController = TextEditingController(text: widget.cliente?.cep ?? '');
     _enderecoController =
         TextEditingController(text: widget.cliente?.endereco ?? '');
+    _numeroController =
+        TextEditingController(text: widget.cliente?.numero ?? '');
     _bairroController =
         TextEditingController(text: widget.cliente?.bairro ?? '');
     _complementoController =
@@ -62,6 +77,7 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
       telefone: _telefoneController.text,
       cep: _cepController.text,
       endereco: _enderecoController.text,
+      numero: _numeroController.text,
       bairro: _bairroController.text,
       complemento: _complementoController.text,
       cidade: _cidadeController.text,
@@ -86,7 +102,7 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
         bool result = await clienteService.delete(widget.cliente!.id!);
         if (result) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Cliente excluido com sucesso!')),
+            SnackBar(content: Text('Cliente excluído com sucesso!')),
           );
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => ClienteListScreen()));
@@ -98,7 +114,7 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
         }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao excluir cliente: $error')),
+          SnackBar(content: Text('Erro ao excluir cliente!')),
         );
       }
     }
@@ -118,6 +134,10 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
               onPressed: _excluirCliente,
               tooltip: 'Excluir Cliente',
             ),
+          IconButton(
+              key: Key('ibSalvarCliente'),
+              icon: const Icon(Icons.save),
+              onPressed: _salvarCliente),
         ],
       ),
       body: Padding(
@@ -126,78 +146,63 @@ class _CadastroClienteScreenState extends State<CadastroClienteScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _razaoSocialController,
-                  decoration: const InputDecoration(labelText: 'Razão Social'),
-                ),
+              _buildTextField(_razaoSocialController, 'Razão Social'),
+              _buildTextField(_nomeFantasiaController, 'Nome Fantasia'),
+              _buildTextField(
+                _cpfCnpjController,
+                'CPF/CNPJ',
+                inputFormatters: [
+                  MaskedInputFormatter(_cpfCnpjMask),
+                  FilteringTextInputFormatter.singleLineFormatter,
+                ],
+                onChanged: _updateMask,
+                keyboardType: TextInputType.number,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _nomeFantasiaController,
-                  decoration: const InputDecoration(labelText: 'Nome Fantasia'),
-                ),
+              _buildTextField(
+                _telefoneController,
+                'Telefone',
+                inputFormatters: [PhoneInputFormatter()],
+                keyboardType: TextInputType.phone,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _cpfCnpjController,
-                  decoration: const InputDecoration(labelText: 'CPF/CNPJ'),
-                ),
+              _buildTextField(
+                _cepController,
+                'CEP',
+                inputFormatters: [MaskedInputFormatter('#####-###')],
+                keyboardType: TextInputType.number,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _telefoneController,
-                  decoration: const InputDecoration(labelText: 'Telefone'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _cepController,
-                  decoration: const InputDecoration(labelText: 'CEP'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _enderecoController,
-                  decoration: const InputDecoration(labelText: 'Endereço'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _bairroController,
-                  decoration: const InputDecoration(labelText: 'Bairro'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _complementoController,
-                  decoration: const InputDecoration(labelText: 'Complemento'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: TextField(
-                  controller: _cidadeController,
-                  decoration: const InputDecoration(labelText: 'Cidade'),
-                ),
-              ),
+              _buildTextField(_enderecoController, 'Endereço'),
+              _buildTextField(_numeroController, 'Número'),
+              _buildTextField(_bairroController, 'Bairro'),
+              _buildTextField(_complementoController, 'Complemento'),
+              _buildTextField(_cidadeController, 'Cidade'),
               const SizedBox(height: 20),
               ElevatedButton(
-                key: Key('ebSavarCliente'),
+                key: Key('ebSalvarCliente'),
                 onPressed: _salvarCliente,
                 child: const Text('Salvar Cliente'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, {
+    List<TextInputFormatter>? inputFormatters,
+    void Function(String)? onChanged,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(labelText: label),
+        inputFormatters: inputFormatters,
+        onChanged: onChanged,
+        keyboardType: keyboardType,
       ),
     );
   }

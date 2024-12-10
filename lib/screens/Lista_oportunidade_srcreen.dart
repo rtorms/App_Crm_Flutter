@@ -37,7 +37,9 @@ class _OportunidadeListScreenState extends State<OportunidadeListScreen> {
     } catch (e) {
       // Exibe erro em um SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar Oportunidades: $e')),
+        SnackBar(
+            content: Text(
+                'Erro ao carregar Oportunidades, verifique a conexão e tente mais tarde!')),
       );
     }
   }

@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class AnotacoesScreen extends StatefulWidget {
   final List<Anotacao> anotacoes;
   final int idOportunidade;
+  final String nomeCliente;
 
   const AnotacoesScreen({
     Key? key,
     required this.anotacoes,
     required this.idOportunidade,
+    required this.nomeCliente,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class AnotacoesScreen extends StatefulWidget {
 class _AnotacoesScreenState extends State<AnotacoesScreen> {
   late List<Anotacao> _anotacoes;
   late TextEditingController _novaAnotacaoController;
+  late String _nomeCliente;
 
   @override
   void initState() {
@@ -26,6 +29,7 @@ class _AnotacoesScreenState extends State<AnotacoesScreen> {
     _anotacoes =
         List.from(widget.anotacoes); // Copiar para evitar alterações diretas
     _novaAnotacaoController = TextEditingController();
+    _nomeCliente = widget.nomeCliente;
   }
 
   void _adicionarAnotacao() {
@@ -96,8 +100,8 @@ class _AnotacoesScreenState extends State<AnotacoesScreen> {
             ElevatedButton(
               onPressed: () async {
                 await AgendaService.adicionarEvento(
-                  titulo: "Compromisso: ${_novaAnotacaoController.text}",
-                  descricao: "Gerado a partir da anotação",
+                  titulo: "Compromisso com cliente: ${_nomeCliente}  ",
+                  descricao: _novaAnotacaoController.text,
                   inicio: DateTime.now(),
                   fim: DateTime.now().add(Duration(hours: 1)),
                 );

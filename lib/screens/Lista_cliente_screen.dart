@@ -37,7 +37,10 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
     } catch (e) {
       // Exibe erro em um SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar clientes: $e')),
+        SnackBar(
+            content:
+                Text('Erro ao carregar clientes, verifique conexão de dados, '
+                    'e tente mais tarde!')),
       );
     }
   }
